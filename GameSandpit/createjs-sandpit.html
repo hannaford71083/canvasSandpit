@@ -1,0 +1,294 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+
+
+    <script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
+
+    <script src="https://code.createjs.com/preloadjs-0.6.2.min.js"></script>
+
+    <!--<script src="/Scripts/easeljs-NEXT.combined.js"></script>-->
+
+    <script>
+
+
+        window.onload = function () {
+
+            var ratio;
+            var stage, w, h, loader;
+            var sky, grant, ground, hill, hill2;
+
+
+           
+            window.Stages = {
+                "currentStageIndex": 0, //init
+                "start": function () {
+                    this.playFunction();
+                },
+                "playFunction": function () {
+                    this[this.stageLookup[this.currentStageIndex]]();
+                },
+                "current": function () {
+                    return this.stageLookup[this.currentStageIndex]
+                },
+                "next": function () {
+                    if (this.currentStageIndex >= this.stageLookup.length) {
+                        this.currentStageIndex = 0;
+                        this.playFunction();
+                    }
+                    else {
+                        this.currentStageIndex++;
+                        this.playFunction();
+                    }
+                    return this.stageLookup[this.currentStageIndex];
+                },
+                "stageLookup": ["countdown_1", "running_2", "reachLine_3", "jump_4", "land_5", "results_6"],
+                "countdown_1": function () {
+                    var countdown = 4;
+                    updateText("Are You ready!!!");
+                    repeat();
+                    function repeat() {
+                        setTimeout(function () {
+                            countdown--;
+                            if (countdown > 0 ) {
+                                updateText(countdown);
+                                repeat();
+                            }
+                            else if (countdown > -1) {
+                                updateText("Go");
+                                repeat();
+                            }
+                            else {
+                                updateText("");
+                                Stages.next();
+                            }
+                        }, 1000);
+                    }
+
+                },
+                "running_2": function () {
+                    updateText("Press G and H!!!");
+                    
+                },
+                "reachLine_3": function(){
+                
+                },
+                "jump_4": function(){
+                
+                },
+                "land_5": function(){
+                
+                },
+                "results_6": function () {
+
+                }
+            }
+
+
+            function updateText(input) {
+                stage.children.pop(); //remove previous child propbably text ???
+                text = new createjs.Text(input, "40px Arial", "#ff7700");
+                text.x = 500;
+                text.y = 100;
+                text.textBaseline = "alphabetic";
+                stage.addChild(text);
+                console.log(stage);
+
+            }
+
+            /*
+            
+            stage 1 ) countdown
+                show timing on canvas
+            stage 2 ) running (tap tap)
+                capture ammount of clicks
+            stage 3 ) reach line (press space before line)
+                
+            stage 4 ) player jumps
+            stage 5 ) player lands (with sand animation)
+            stage 6 ) show distance
+            
+            */
+
+            
+            init();
+
+            
+
+
+
+            function init() {
+
+                console.log("init");
+                //examples.showDistractor();
+                stage = new createjs.Stage("testCanvas");
+
+                // grab canvas width and height for later calculations:
+                w                       = stage.canvas.width;
+                h                       = stage.canvas.height;
+
+                manifest = [
+                    { src: "spritesheet_grant.png", id: "grant"  },
+                    { src: "sky.png", id: "sky" },
+                    { src: "ground.png", id: "ground" },
+                    { src: "hill1.png", id: "hill" },
+                    { src: "hill2.png", id: "hill2" }
+                ];
+
+                loader = new createjs.LoadQueue(false);
+
+                loader.addEventListener("complete", handleComplete);
+                //loader.addEventListener("complete", responsiveResize);
+                loader.loadManifest(manifest, true, "Images/");
+            }
+
+            function handleComplete() {
+                responsiveResize();
+
+                //examples.hideDistractor();
+                console.log("handleComplete");
+
+                sky = new createjs.Shape();
+                sky.graphics.beginBitmapFill(loader.getResult("sky")).drawRect(0, 0, w, h);
+
+                var groundImg = loader.getResult("ground");
+                ground = new createjs.Shape();
+                ground.graphics.beginBitmapFill(groundImg).drawRect(0, 0, w + groundImg.width, groundImg.height);
+                ground.tileW = groundImg.width;
+                ground.y = h - groundImg.height;
+
+                hill = new createjs.Bitmap(loader.getResult("hill"));
+                hill.setTransform(Math.random() * w, h - hill.image.height * 4 - groundImg.height, 4, 4);
+                hill.alpha = 0.5;
+
+                hill2 = new createjs.Bitmap(loader.getResult("hill2"));
+                hill2.setTransform(Math.random() * w, h - hill2.image.height * 3 - groundImg.height, 3, 3);
+
+                var spriteSheet = new createjs.SpriteSheet({
+                    framerate: 30,
+                    "images": [loader.getResult("grant")],
+                    "frames": { "regX": 82, "height": 292, "count": 64, "regY": 0, "width": 165 },
+                    // define two animations, run (loops, 1.5x speed) and jump (returns to run):
+                    "animations": {
+                        "run": [0, 25, "run", 1.5],
+                        "jump": [26, 63, "run"]
+                    }
+                });
+                grant = new createjs.Sprite(spriteSheet, "run");
+                grant.y = 35;
+
+
+                Stages.start();
+
+                stage.addChild(sky, hill, hill2, ground, grant, text);
+
+                stage.scaleX = ratio;
+                stage.scaleY = ratio;
+
+                stage.addEventListener("stagemousedown", handleJumpStart);
+
+                createjs.Ticker.timingMode = createjs.Ticker.RAF;
+                createjs.Ticker.addEventListener("tick", tick);
+
+            }
+
+            function handleJumpStart() {
+                grant.gotoAndPlay("jump");
+            }
+
+
+
+            var firstRound = true;
+
+            function tick(event) {
+
+                //console.log("tick");
+
+                //["countdown_1", "running_2", "reachLine_3", "jump_4", "land_5", "results_6"],
+
+                
+                if (Stages.current() == "countdown_1") {      
+                    grant.x = 100;
+                }
+                else if (Stages.current() == "running_2") {
+                    var deltaS = event.delta / 1000;
+                    var position = grant.x + 150 * deltaS;
+
+                    //console.log("position  : ", position, " , deltaS : ", deltaS);
+
+                    var grantW = grant.getBounds().width * grant.scaleX;
+                    grant.x = (position >= w + grantW) ? -grantW : position;
+
+                    ground.x = (ground.x - deltaS * 150) % ground.tileW;
+                    hill.x = (hill.x - deltaS * 30);
+                    if (hill.x + hill.image.width * hill.scaleX <= 0) {
+                        hill.x = w;
+                    }
+                    hill2.x = (hill2.x - deltaS * 45);
+                    if (hill2.x + hill2.image.width * hill2.scaleX <= 0) {
+                        hill2.x = w;
+                    }
+                }
+
+                stage.update(event);
+
+                
+                //responsiveResize();
+
+
+            }
+
+
+            function responsiveResize() {
+                //get screen width
+                console.log(window.innerWidth);
+                ratio = window.innerWidth / w;
+                console.log(ratio);
+                document.getElementById("testCanvas").setAttribute("width", (ratio * w));
+                document.getElementById("testCanvas").setAttribute("height", (ratio * h));
+                //handleComplete();
+            }
+
+
+            window.onresize = function () {
+
+                if (typeof resizeTimeout != 'undefined') {
+                    console.log("clear previous");
+                    clearTimeout(window.resizeTimeout)
+                }
+
+                window.resizeTimeout = setTimeout(function () {
+                    console.log("w " + w + " , h " + h);
+
+                    handleComplete();
+
+                    //if (window.innerWidth < w) {
+                        //responsiveResize();
+                    //}
+
+                    console.log("should only trigger once");
+                }, 200);
+            }
+
+
+        }
+
+
+    </script>
+
+
+</head>
+<body>
+    <h1>Create JS - Sandpit</h1>
+    <!--<p>Ok here we go, first stop look at site, then download, then read tutorial!</p><br />
+    <p>Notes:</p>
+    <ul>
+        <li>Can we modify sprite anitmation speed and change the velocity of elemets across screen on fly?</li>
+    </ul>-->
+    
+    <canvas id="testCanvas" width="960" height="400"></canvas>
+    
+
+</body>
+</html>

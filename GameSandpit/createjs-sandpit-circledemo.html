@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+
+
+    <script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
+
+    <script>
+        window.onload = function () {
+            //alert("Loaded!");
+            var stage = new createjs.Stage("demoCanvas")
+
+            var circle = new createjs.Shape();
+            circle.graphics.beginFill("#f00").drawCircle(0, 0, 50);
+            circle.x = 100;
+            circle.y = 100;
+            stage.addChild(circle);
+            stage.update();
+        }
+
+
+    </script>
+
+
+</head>
+<body>
+    <h1>Create JS - Sandpit</h1>
+    <p>Ok here we go, first stop look at site, then download, then read tutorial!</p><br />
+    <p>Notes:</p>
+    <ul>
+        <li>Can we modify sprite anitmation speed and change the velocity of elemets across screen on fly?</li>
+    </ul>
+    
+    <canvas id="demoCanvas" width="500" height="300"></canvas>
+    
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+c:\users\david\documents\visual studio 2013\Projects\GameSandpit\GameSandpit\bin\GameSandpit.dll.config
+c:\users\david\documents\visual studio 2013\Projects\GameSandpit\GameSandpit\bin\GameSandpit.dll
+c:\users\david\documents\visual studio 2013\Projects\GameSandpit\GameSandpit\bin\GameSandpit.pdb
+c:\users\david\documents\visual studio 2013\Projects\GameSandpit\GameSandpit\obj\Debug\GameSandpit.csprojResolveAssemblyReference.cache
+c:\users\david\documents\visual studio 2013\Projects\GameSandpit\GameSandpit\obj\Debug\GameSandpit.dll
+c:\users\david\documents\visual studio 2013\Projects\GameSandpit\GameSandpit\obj\Debug\GameSandpit.pdb
